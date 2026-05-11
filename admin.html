@@ -1,0 +1,33 @@
+<button onclick="logoutAdmin()">
+Logout
+</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
+
+const supabaseClient = supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+async function cekLogin(){
+
+    const { data } = await supabaseClient.auth.getSession();
+
+    if(!data.session){
+
+        window.location.href = "login.html";
+    }
+}
+
+cekLogin();
+async function logoutAdmin(){
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href = "login.html";
+}
+
+</script>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berita & Artikel - SMA SWASTA RAUDHATUL HASANAH</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style   >
+    .news-search {
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.search-box {
+    width: 100%; /* Agar memenuhi lebar container */
+    max-width: 600px; /* Batas maksimal agar tidak terlalu panjang di layar lebar */
+    padding: 12px 20px;
+    border: 1px solid #ccc;
+    border-radius: 25px; /* Membuat sudut membulat */
+    font-family: 'Poppins', sans-serif;
+    outline: none;
+}
+</style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="poto/pancacita.svg" alt="pancacita">
+                    <img src="poto/lponpes.png" alt="logo yayasan">
+                    <img src="poto/logo RH.png" alt="logo sekolah">
+                    <h2>SMA SWASTA RAUDHATUL HASANAH</h2>
+                </div>
+                        <ul class="nav-menu">
+    <li class="nav-item">
+        <a href="#beranda" class="nav-link active">Beranda</a>
+    </li>
+    <li class="nav-item">
+        <a href="#profil" class="nav-link">Profil</a>
+    </li>
+    <li class="nav-item">
+        <a href="#visi-misi" class="nav-link">Visi & Misi</a>
+    </li>
+    <li class="nav-item">
+        <a href="berita.html" class="nav-link">Informasi</a>
+    </li>
+    <li class="nav-item">
+        <a href="login.html" class="nav-link">
+            <i class="fas fa-user-lock"></i>
+        </a>
+    </li>
+</ul>
+                <div class="hamburger">
+                    <i class="fas fa-home" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- News Header -->
+    <section class="news-header">
+        <div class="container">
+            <h2 class="section-title">Berita Terkini</h2>
+            <p>Dapatkan informasi terbaru seputar kegiatan, prestasi, dan pengumuman SMA Swasta Raudhatul Hasanah.</p>
+        </div>
+    </section>
+
+    <!-- News Content -->
+    <section class="news-container">
+    <div class="container">
+        <div class="news-search">
+            <input type="text" class="search-box" placeholder="Cari berita atau pengumuman...">
+        </div>
+
+        <div id="container-berita" class="event-grid">
+            </div>
+    </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SMA SWASTA RAUDHATUL HASANAH</h3>
+                    <p>Jl.kutacane Medan, Simpang Semadam<br>
+                        kec. Semadam, Kab. aceh tenggara<br>
+                    Telp:+62 823-1719-9142<br>
+                    Email: smasraudhatulhasanah@gmail.com</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Media Sosial</h4>
+                    <div class="social-links">
+                        <a href="https://web.facebook.com/profile.php?id=100077826302576"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 SMA SWASTA RAUDHATUL HASANAH. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="java.js"></script>
+</body>
+</html>

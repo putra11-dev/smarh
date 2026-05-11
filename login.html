@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Admin - SMA SWASTA RAUDHATUL HASANAH</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#4A90E2,#667eea);
+}
+
+.login-container{
+    width:100%;
+    max-width:400px;
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+
+.logo{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.logo img{
+    width:80px;
+    margin-bottom:10px;
+}
+
+.logo h2{
+    color:#333;
+    font-size:1.4rem;
+}
+
+.input-group{
+    margin-bottom:20px;
+}
+
+.input-group label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:bold;
+    color:#444;
+}
+
+.input-box{
+    position:relative;
+}
+
+.input-box i{
+    position:absolute;
+    left:15px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#888;
+}
+
+.input-box input{
+    width:100%;
+    padding:14px 14px 14px 45px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:1rem;
+    outline:none;
+}
+
+.input-box input:focus{
+    border-color:#4A90E2;
+}
+
+.login-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#4A90E2;
+    color:white;
+    font-size:1rem;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.login-btn:hover{
+    background:#256fd1;
+}
+
+.error{
+    color:red;
+    text-align:center;
+    margin-top:15px;
+    display:none;
+}
+
+.footer-text{
+    text-align:center;
+    margin-top:20px;
+    color:#666;
+    font-size:0.9rem;
+}
+
+</style>
+</head>
+<body>
+
+<div class="login-container">
+
+    <div class="logo">
+        <img src="poto/logo RH.png" alt="Logo Sekolah">
+        <h2>ADMIN SEKOLAH</h2>
+    </div>
+
+    <div class="input-group">
+        <label>Email</label>
+
+        <div class="input-box">
+            <i class="fas fa-envelope"></i>
+
+            <input type="email" id="email" placeholder="Masukkan Email">
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label>Password</label>
+
+        <div class="input-box">
+            <i class="fas fa-lock"></i>
+
+            <input type="password" id="password" placeholder="Masukkan Password">
+        </div>
+    </div>
+
+    <button class="login-btn" onclick="loginAdmin()">
+        Login Admin
+    </button>
+
+    <div class="error" id="errorText">
+        Email atau Password Salah
+    </div>
+
+    <div class="footer-text">
+        SMA SWASTA RAUDHATUL HASANAH
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function loginAdmin(){
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const errorText = document.getElementById('errorText');
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+    });
+
+    if(error){
+
+        errorText.style.display = 'block';
+
+    }else{
+
+        alert('Login Berhasil');
+
+        window.location.href = 'admin.html';
+    }
+}
+
+</script>
+
+</body>
+</html>
