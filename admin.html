@@ -11,23 +11,12 @@ const supabaseClient = supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
-
 async function cekLogin(){
+    // Di Supabase v2, session berada dalam properti data
+    const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-    const { data } = await supabaseClient.auth.getSession();
-
-    if(!data.session){
-
+    if(!session || error){
         window.location.href = "login.html";
     }
 }
-
-cekLogin();
-async function logoutAdmin(){
-
-    await supabaseClient.auth.signOut();
-
-    window.location.href = "login.html";
-}
-
 </script>
