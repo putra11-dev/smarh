@@ -241,20 +241,20 @@
             </div>
         </div>
     </footer>
-    <script>
-// Pindahkan inisialisasi ke paling atas agar terbaca oleh fungsi
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
 const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
+
+// Gunakan nama variabel yang konsisten
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const params = new URLSearchParams(window.location.search);
 const beritaSlug = params.get('id');
 
 async function loadDetailAndSidebar() {
-    if (!beritaSlug) {
-        document.querySelector('.article-body').innerHTML = "<p>ID Berita tidak valid.</p>";
-        return;
-    }
+    if (!beritaSlug) return;
 
     try {
         // 1. Ambil Data Berita Utama - Gunakan supabaseClient
@@ -266,7 +266,7 @@ async function loadDetailAndSidebar() {
 
         if (error || !berita) throw new Error("Berita tidak ditemukan");
 
-        // Isi konten ke HTML
+        // Update elemen HTML
         document.querySelector('.article-title').innerText = berita.judul;
         document.querySelector('.featured-image').src = berita.gambar;
         document.querySelector('.article-meta').innerHTML = 
@@ -274,7 +274,7 @@ async function loadDetailAndSidebar() {
         document.querySelector('.article-body').innerHTML = `<p>${berita.konten_lengkap || berita.isi}</p>`;
         document.title = `${berita.judul} - SMA SWASTA RAUDHATUL HASANAH`;
 
-        // 2. Ambil Sidebar
+        // 2. Ambil Sidebar - Gunakan supabaseClient
         const { data: sidebarData } = await supabaseClient
             .from('berita')
             .select('slug, judul, gambar, tanggal')
@@ -294,8 +294,8 @@ async function loadDetailAndSidebar() {
             `).join('');
         }
     } catch (e) {
-        console.error("Error:", e.message);
-        document.querySelector('.article-body').innerHTML = "<p>Gagal memuat berita. Pastikan slug di URL benar.</p>";
+        console.error("Detail Error:", e.message);
+        document.querySelector('.article-body').innerHTML = "<p>Gagal memuat berita. Periksa koneksi atau slug URL.</p>";
     }
 }
 
