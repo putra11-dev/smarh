@@ -163,38 +163,32 @@ body{
 
 <script>
 
-const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
-
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
-
 async function loginAdmin(){
-
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-
     const errorText = document.getElementById('errorText');
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
+    // Reset pesan error
+    errorText.style.display = 'none';
 
-    if(error){
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
 
-        errorText.style.display = 'block';
-
-    }else{
-
-        alert('Login Berhasil');
-
-        window.location.href = 'admin.html';
+        if(error) {
+            errorText.innerText = "Login Gagal: " + error.message;
+            errorText.style.display = 'block';
+        } else {
+            alert('Login Berhasil');
+            window.location.href = 'admin.html';
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Terjadi kesalahan sistem.");
     }
 }
-
 </script>
 
 </body>
