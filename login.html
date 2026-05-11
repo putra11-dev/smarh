@@ -113,11 +113,51 @@ body{
     color:#666;
     font-size:0.9rem;
 }
+.back-home {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: white; /* Warna teks putih agar kontras dengan background biru */
+    background: rgba(255, 255, 255, 0.2); /* Background transparan tipis */
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: bold;
+    backdrop-filter: blur(5px); /* Efek blur kaca */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
 
+.back-home:hover {
+    background: white;
+    color: #4A90E2; /* Berubah warna saat disentuh mouse */
+    transform: translateX(5px); /* Efek bergeser sedikit */
+}
+
+.back-home i {
+    font-size: 18px;
+}
+
+/* Responsif untuk HP agar tidak terlalu mepet ke pinggir */
+@media (max-width: 480px) {
+    .back-home {
+        top: 15px;
+        left: 15px;
+        padding: 8px 15px;
+        font-size: 13px;
+    }
+}
 </style>
 </head>
 <body>
-
+<a href="index.html" class="back-home">
+    <i class="fas fa-home"></i> Beranda</a>
+    
 <div class="login-container">
 
     <div class="logo">
