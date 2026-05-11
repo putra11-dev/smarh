@@ -160,36 +160,38 @@ body{
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
+    // TAMBAHKAN INI: Inisialisasi Client
+    const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-async function loginAdmin(){
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const errorText = document.getElementById('errorText');
+    async function loginAdmin(){
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const errorText = document.getElementById('errorText');
 
-    // Reset pesan error
-    errorText.style.display = 'none';
+        errorText.style.display = 'none';
 
-    try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
+        try {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
 
-        if(error) {
-            errorText.innerText = "Login Gagal: " + error.message;
-            errorText.style.display = 'block';
-        } else {
-            alert('Login Berhasil');
-            window.location.href = 'admin.html';
+            if(error) {
+                errorText.innerText = "Login Gagal: " + error.message;
+                errorText.style.display = 'block';
+            } else {
+                alert('Login Berhasil');
+                // Simpan session secara otomatis oleh supabase-js
+                window.location.href = 'admin.html';
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Terjadi kesalahan sistem.");
         }
-    } catch (err) {
-        console.error(err);
-        alert("Terjadi kesalahan sistem.");
     }
-}
 </script>
-
 </body>
 </html>
