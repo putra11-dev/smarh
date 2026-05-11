@@ -243,62 +243,12 @@
     </footer>
 
 <script>
-// Pastikan parameter 'id' (slug) ada di URL
-const params = new URLSearchParams(window.location.search);
-const beritaSlug = params.get('id');
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-async function loadDetailAndSidebar() {
-    try {
-        // 1. Ambil Data Berita Utama berdasarkan Slug
-        const { data: berita, error } = await supabase
-            .from('berita')
-            .select('*')
-            .eq('slug', beritaSlug)
-            .single();
+<script>
 
-        if (error) throw error;
-
-        if (berita) {
-            document.querySelector('.article-title').innerText = berita.judul;
-            document.querySelector('.featured-image').src = berita.gambar;
-            document.querySelector('.article-meta').innerHTML = 
-                `<i class="fas fa-calendar"></i> ${berita.tanggal} | <i class="fas fa-newspaper"></i> SMA RH`;
-            document.querySelector('.article-body').innerHTML = `<p>${berita.konten_lengkap || berita.isi}</p>`;
-            
-            // Update Title Browser
-            document.title = `${berita.judul} - SMA SWASTA RAUDHATUL HASANAH`;
-        }
-
-        // 2. Ambil Daftar Berita Lain (Sidebar) - Maksimal 5
-        const { data: sidebarData } = await supabaseClient
-            .from('berita')
-            .select('slug, judul, gambar, tanggal')
-            .not('slug', 'eq', beritaSlug)
-            .limit(5);
-
-        const sidebarList = document.getElementById('sidebar-news-list');
-        if (sidebarList && sidebarData) {
-            sidebarList.innerHTML = '';
-            sidebarData.forEach(item => {
-                sidebarList.innerHTML += `
-                    <a href="detail-berita.html?id=${item.slug}" class="sidebar-item">
-                        <img src="${item.gambar}" alt="${item.judul}" onerror="this.src='poto/default.jpg'">
-                        <div>
-                            <h4>${item.judul}</h4>
-                            <small style="color: #888;">${item.tanggal}</small>
-                        </div>
-                    </a>
-                `;
-            });
-        }
-    } catch (e) {
-        console.error("Gagal memuat data dari Supabase:", e.message);
-        document.querySelector('.article-body').innerHTML = "<p>Berita tidak ditemukan atau terjadi kesalahan koneksi.</p>";
-    }
-}
-
-document.addEventListener('DOMContentLoaded', loadDetailAndSidebar);
-
+loadDetailAndSidebar();
+    
 const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
 
@@ -306,8 +256,90 @@ const supabaseClient = supabase.createClient(
 SUPABASE_URL,
 SUPABASE_KEY
 );
+
+// Ambil slug dari URL
+const params = new URLSearchParams(window.location.search);
+
+const beritaSlug = params.get('id');
+
+async function loadDetailAndSidebar() {
+
+    try {
+
+        // Ambil detail berita
+        const { data: berita, error } = await supabaseClient
+            .from('berita')
+            .select('*')
+            .eq('slug', beritaSlug)
+            .single();
+
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        // Tampilkan detail berita
+        if (berita) {
+
+            document.querySelector('.article-title').innerText =
+                berita.judul;
+
+            document.querySelector('.featured-image').src =
+                berita.gambar;
+
+            document.querySelector('.featured-image').alt =
+                berita.judul;
+
+            document.querySelector('.article-meta').innerHTML =
+                `<i class="fas fa-calendar"></i> ${berita.tanggal}`;
+
+            document.querySelector('.article-body').innerHTML =
+                `<p>${berita.konten_lengkap}</p>`;
+
+            // Ganti title browser
+            document.title =
+                berita.judul + ' - SMA SWASTA RAUDHATUL HASANAH';
+        }
+
+        // Sidebar berita terbaru
+        const { data: sidebarData } = await supabaseClient
+            .from('berita')
+            .select('*')
+            .neq('slug', beritaSlug)
+            .limit(5);
+
+        const sidebarList =
+            document.getElementById('sidebar-news-list');
+
+        sidebarList.innerHTML = '';
+
+        sidebarData.forEach(item => {
+
+            sidebarList.innerHTML += `
+            
+            <a href="detail-berita.html?id=${item.slug}" class="sidebar-item">
+
+                <img src="${item.gambar}" alt="${item.judul}">
+
+                <div>
+                    <h4>${item.judul}</h4>
+                    <small>${item.tanggal}</small>
+                </div>
+
+            </a>
+            
+            `;
+        });
+
+    } catch(err) {
+
+        console.log(err);
+
+        document.querySelector('.article-body').innerHTML =
+            '<p>Berita gagal dimuat.</p>';
+    }
+}
+
 </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="java.js"></script>
 </body>
 </html>
