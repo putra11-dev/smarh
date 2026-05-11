@@ -243,7 +243,7 @@
     </footer>
    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!--<script>
+<script>
 const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
 
@@ -299,71 +299,6 @@ async function loadDetailAndSidebar() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadDetailAndSidebar);
-</script>-->
-
-<script>
-// 2. Inisialisasi Client di awal agar bisa diakses semua fungsi
-const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-const params = new URLSearchParams(window.location.search);
-const beritaSlug = params.get('id');
-
-async function loadDetailAndSidebar() {
-    if (!beritaSlug) return;
-
-    try {
-        // AMBIL DATA BERITA UTAMA
-        const { data: berita, error: errorBerita } = await supabaseClient
-            .from('berita')
-            .select('*')
-            .eq('slug', beritaSlug)
-            .single();
-
-        if (errorBerita || !berita) throw new Error("Berita tidak ditemukan");
-
-        // Isi konten utama
-        document.querySelector('.article-title').innerText = berita.judul;
-        document.querySelector('.featured-image').src = berita.gambar;
-        document.querySelector('.article-meta').innerHTML = 
-            `<i class="fas fa-calendar"></i> ${berita.tanggal} | <i class="fas fa-newspaper"></i> SMA RH`;
-        document.querySelector('.article-body').innerHTML = `<p>${berita.konten_lengkap || berita.isi}</p>`;
-
-        // --- BAGIAN SIDEBAR (BERITA TERBARU) ---
-        const { data: sidebarData, error: errorSidebar } = await supabaseClient
-            .from('berita')
-            .select('slug, judul, gambar, tanggal')
-            .not('slug', 'eq', beritaSlug) // Jangan tampilkan berita yang sedang dibaca
-            .order('id', { ascending: false }) // Urutkan dari yang terbaru
-            .limit(5);
-
-        const sidebarList = document.getElementById('sidebar-news-list');
-        
-        if (sidebarList && sidebarData) {
-            sidebarList.innerHTML = ''; // Kosongkan loading/isi lama
-            sidebarData.forEach(item => {
-                sidebarList.innerHTML += `
-                    <a href="detail-berita.html?id=${item.slug}" class="sidebar-item">
-                        <img src="${item.gambar}" alt="${item.judul}" onerror="this.src='poto/default.jpg'">
-                        <div>
-                            <h4>${item.judul}</h4>
-                            <small style="color: #888;">${item.tanggal}</small>
-                        </div>
-                    </a>
-                `;
-            });
-        }
-    } catch (e) {
-        console.error("Error Sidebar/Detail:", e.message);
-        if (document.querySelector('.article-body')) {
-            document.querySelector('.article-body').innerHTML = "<p>Gagal memuat data berita.</p>";
-        }
-    }
-}
-
-// Jalankan fungsi saat halaman siap
 document.addEventListener('DOMContentLoaded', loadDetailAndSidebar);
 </script>
     
