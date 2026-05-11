@@ -60,29 +60,47 @@
         }
         proteksiHalaman();
 
-        async function simpanBerita() {
-            const judul = document.getElementById('judul').value;
-            const gambar = document.getElementById('gambar').value;
-            const konten = quill.root.innerHTML; // Mengambil konten HTML dari editor
-            const slug = judul.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
-            const tanggal = new Date().toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+async function simpanBerita() {
+    const judul = document.getElementById('judul').value;
+    const gambar = document.getElementById('gambar').value;
+    const kontenLengkap = quill.root.innerHTML; // Konten dari Editor ala Word
+    
+    // 1. Buat SLUG otomatis dari judul (Contoh: "Berita Hari Ini" -> "berita-hari-ini")
+    const slug = judul.toLowerCase()
+        .replace(/[^a-z0-9 -]/g, '') 
+        .replace(/\s+/g, '-') 
+        .replace(/-+/g, '-');
 
-            const { error } = await supabaseClient.from('berita').insert([
-                { judul, gambar, isi: konten, slug, tanggal, konten_lengkap: konten }
-            ]);
+    // 2. Buat TANGGAL otomatis (Format: 15 Mei 2024)
+    const opsiTanggal = { day: 'numeric', month: 'long', year: 'numeric' };
+    const tanggal = new Date().toLocaleDateString('id-ID', opsiTanggal);
 
-            if (error) {
-                alert("Gagal: " + error.message);
-            } else {
-                alert("Berita Berhasil Terbit!");
-                location.reload();
+    // 3. Buat RINGKASAN (Isi) otomatis dari konten lengkap (ambil 150 karakter pertama)
+    const teksMurni = quill.getText();
+    const isiRingkas = teksMurni.substring(0, 150) + "...";
+
+    // Simpan ke Supabase
+    const { data, error } = await supabaseClient
+        .from('berita')
+        .insert([
+            { 
+                judul: judul, 
+                slug: slug, 
+                gambar: gambar, 
+                konten_lengkap: kontenLengkap, // HTML dari Word Editor
+                isi: isiRingkas,               // Teks pendek untuk kartu berita
+                tanggal: tanggal               // Tanggal otomatis
             }
-        }
+        ]);
 
-        async function logout() {
-            await supabaseClient.auth.signOut();
-            window.location.href = "login.html";
-        }
+    if (error) {
+        alert("Gagal menyimpan: " + error.message);
+        console.error(error);
+    } else {
+        alert("Berita Berhasil Terbit!");
+        window.location.reload();
+    }
+}
     </script>
 </body>
 </html>
