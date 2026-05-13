@@ -1,4 +1,3 @@
-</button>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,16 +9,18 @@
         .admin-container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: 600; }
-        input[type="text"], input[type="date"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; }
+        input[type="text"], input[type="file"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         #editor { height: 300px; margin-bottom: 20px; }
         .btn-save { background: #4A90E2; color: white; padding: 12px 25px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
+        .btn-save:disabled { background: #ccc; }
         .logout-btn { float: right; background: #ff4d4d; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; }
+        #preview-img { max-width: 200px; margin-top: 10px; display: none; border-radius: 8px; }
     </style>
 </head>
 <body>
     <div class="admin-container">
-        <a href="index.html" onclick="logout()" class="logout-btn">Logout</a>
-        <h2>Tambah Berita Baru</h2>
+        <a href="index.html" class="logout-btn">Logout</a>
+        <h2 id="form-title">Tambah Berita Baru</h2>
         <hr><br>
         
         <div class="form-group">
@@ -28,79 +29,136 @@
         </div>
 
         <div class="form-group">
-            <label>URL Gambar (Link Foto)</label>
-            <input type="text" id="gambar" placeholder="https://link-foto.com/gambar.jpg">
+            <label>Upload Gambar (Dari Komputer)</label>
+            <input type="file" id="input-gambar" accept="image/*">
+            <img id="preview-img" src="" alt="Preview">
+            <input type="hidden" id="url-gambar-lama">
         </div>
 
         <div class="form-group">
-            <label>Isi Berita (Editor ala Word)</label>
+            <label>Isi Berita</label>
             <div id="editor"></div>
         </div>
 
-        <button class="btn-save" onclick="simpanBerita()">Publikasikan Berita</button>
+        <button class="btn-save" id="btn-submit" onclick="prosesSimpan()">Publikasikan Berita</button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script>
         const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
+        const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd'; // Pastikan RLS Storage diatur ke Public
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Inisialisasi Editor ala Word (Quill)
         var quill = new Quill('#editor', {
             theme: 'snow',
-            modules: { toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['link', 'clean']] }
+            modules: { toolbar: [['bold', 'italic'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], ['link', 'clean']] }
         });
 
-        // Proteksi Halaman (Cek Login)
-        async function proteksiHalaman() {
+        // Ambil ID dari URL jika ada (untuk mode EDIT)
+        const urlParams = new URLSearchParams(window.location.search);
+        const beritaId = urlParams.get('id');
+
+        async function inisialisasiHalaman() {
+            // 1. Proteksi
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) window.location.href = "login.html";
-        }
-        proteksiHalaman();
 
-async function simpanBerita() {
-    const judul = document.getElementById('judul').value;
-    const gambar = document.getElementById('gambar').value;
-    const kontenLengkap = quill.root.innerHTML; // Konten dari Editor ala Word
-    
-    // 1. Buat SLUG otomatis dari judul (Contoh: "Berita Hari Ini" -> "berita-hari-ini")
-    const slug = judul.toLowerCase()
-        .replace(/[^a-z0-9 -]/g, '') 
-        .replace(/\s+/g, '-') 
-        .replace(/-+/g, '-');
+            // 2. Jika mode Edit, ambil data lama
+            if (beritaId) {
+                document.getElementById('form-title').innerText = "Edit Berita";
+                document.getElementById('btn-submit').innerText = "Simpan Perubahan";
+                
+                const { data, error } = await supabaseClient
+                    .from('berita')
+                    .select('*')
+                    .eq('id', beritaId)
+                    .single();
 
-    // 2. Buat TANGGAL otomatis (Format: 15 Mei 2024)
-    const opsiTanggal = { day: 'numeric', month: 'long', year: 'numeric' };
-    const tanggal = new Date().toLocaleDateString('id-ID', opsiTanggal);
-
-    // 3. Buat RINGKASAN (Isi) otomatis dari konten lengkap (ambil 150 karakter pertama)
-    const teksMurni = quill.getText();
-    const isiRingkas = teksMurni.substring(0, 150) + "...";
-
-    // Simpan ke Supabase
-    const { data, error } = await supabaseClient
-        .from('berita')
-        .insert([
-            { 
-                judul: judul, 
-                slug: slug, 
-                gambar: gambar, 
-                konten_lengkap: kontenLengkap, // HTML dari Word Editor
-                isi: isiRingkas,               // Teks pendek untuk kartu berita
-                tanggal: tanggal               // Tanggal otomatis
+                if (data) {
+                    document.getElementById('judul').value = data.judul;
+                    document.getElementById('url-gambar-lama').value = data.gambar;
+                    document.getElementById('preview-img').src = data.gambar;
+                    document.getElementById('preview-img').style.display = 'block';
+                    quill.root.innerHTML = data.konten_lengkap;
+                }
             }
-        ]);
+        }
+        inisialisasiHalaman();
 
-    if (error) {
-        alert("Gagal menyimpan: " + error.message);
-        console.error(error);
-    } else {
-        alert("Berita Berhasil Terbit!");
-        window.location.reload();
-    }
-}
+        async function uploadGambar(file) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `uploads/${fileName}`;
+
+            const { data, error } = await supabaseClient.storage
+                .from('images') // Pastikan Anda sudah membuat Bucket bernama 'images' di Supabase
+                .upload(filePath, file);
+
+            if (error) throw error;
+
+            const { data: { publicUrl } } = supabaseClient.storage
+                .from('images')
+                .getPublicUrl(filePath);
+            
+            return publicUrl;
+        }
+
+        async function prosesSimpan() {
+            const btn = document.getElementById('btn-submit');
+            btn.disabled = true;
+            btn.innerText = "Memproses...";
+
+            try {
+                const judul = document.getElementById('judul').value;
+                const fileGambar = document.getElementById('input-gambar').files[0];
+                const urlGambarLama = document.getElementById('url-gambar-lama').value;
+                const kontenLengkap = quill.root.innerHTML;
+                
+                let urlGambarFinal = urlGambarLama;
+
+                // Jika ada file baru diupload
+                if (fileGambar) {
+                    urlGambarFinal = await uploadGambar(fileGambar);
+                }
+
+                if (!urlGambarFinal) {
+                    alert("Mohon pilih gambar!");
+                    btn.disabled = false;
+                    return;
+                }
+
+                const slug = judul.toLowerCase().replace(/[^a-z0-9 -]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-');
+                const opsiTanggal = { day: 'numeric', month: 'long', year: 'numeric' };
+                const tanggal = new Date().toLocaleDateString('id-ID', opsiTanggal);
+                const isiRingkas = quill.getText().substring(0, 150) + "...";
+
+                const payload = { 
+                    judul, slug, gambar: urlGambarFinal, konten_lengkap: kontenLengkap, isi: isiRingkas, tanggal 
+                };
+
+                let response;
+                if (beritaId) {
+                    // UPDATE
+                    response = await supabaseClient.from('berita').update(payload).eq('id', beritaId);
+                } else {
+                    // INSERT
+                    response = await supabaseClient.from('berita').insert([payload]);
+                }
+
+                if (response.error) throw response.error;
+
+                alert("Berita Berhasil Disimpan!");
+                window.location.href = "admin_list.html"; // Arahkan ke daftar berita atau reload
+
+            } catch (error) {
+                alert("Terjadi kesalahan: " + error.message);
+                console.error(error);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Publikasikan Berita";
+            }
+        }
     </script>
 </body>
 </html>
