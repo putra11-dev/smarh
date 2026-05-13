@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Daftar Berita - Admin SMA RH</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #4A90E2; color: white; }
+        .btn-add { background: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; }
+        .btn-edit { color: #4A90E2; cursor: pointer; margin-right: 10px; border: none; background: none; }
+        .btn-delete { color: #dc3545; cursor: pointer; border: none; background: none; }
+        img { border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Manajemen Berita</h2>
+        <a href="admin.html" class="btn-add"><i class="fas fa-plus"></i> Tambah Berita</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Gambar</th>
+                <th>Judul</th>
+                <th>Tanggal</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="tabel-berita">
+            </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const SUPABASE_URL = 'https://jtlojyrfwccqebfowlof.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_miw4K1jRQJTEdm1P2sOH-w_kVV6BSBd';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function muatDaftarBerita() {
+        const { data, error } = await supabaseClient
+            .from('berita')
+            .select('*')
+            .order('id', { ascending: false });
+
+        if (error) return alert("Gagal muat berita");
+
+        const tbody = document.getElementById('tabel-berita');
+        tbody.innerHTML = data.map(item => `
+            <tr>
+                <td><img src="${item.gambar}" width="50" height="50" style="object-fit:cover"></td>
+                <td>${item.judul}</td>
+                <td>${item.tanggal}</td>
+                <td>
+                    <button class="btn-edit" onclick="editBerita('${item.id}')"><i class="fas fa-edit"></i></button>
+                    <button class="btn-delete" onclick="hapusBerita('${item.id}')"><i class="fas fa-trash"></i></button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function editBerita(id) {
+        window.location.href = `admin.html?id=${id}`;
+    }
+
+    async function hapusBerita(id) {
+        if (confirm("Apakah Anda yakin ingin menghapus berita ini?")) {
+            const { error } = await supabaseClient
+                .from('berita')
+                .delete()
+                .eq('id', id);
+
+            if (error) {
+                alert("Gagal menghapus: " + error.message);
+            } else {
+                alert("Berita berhasil dihapus!");
+                muatDaftarBerita();
+            }
+        }
+    }
+
+    muatDaftarBerita();
+</script>
+</body>
+</html>
