@@ -58,6 +58,28 @@ hamburger.addEventListener("click", () => {
     }
 });
 
+// LOGIKA PENCARIAN (SEARCH BOX)
+document.addEventListener('DOMContentLoaded', () => {
+    muatBerita(); // Panggil fungsi utama
+
+    const searchInput = document.getElementById('search-input'); // Ambil element input
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            
+            // Filter dari variabel semuaBerita
+            const hasilFilter = semuaBerita.filter(berita => {
+                return (
+                    berita.judul.toLowerCase().includes(keyword) || 
+                    berita.isi.toLowerCase().includes(keyword)
+                );
+            });
+
+            // Tampilkan hasil filter saja
+            tampilkanData(hasilFilter);
+        });
+    }
+});
 
 // Menutup menu saat salah satu link diklik
 document.querySelectorAll(".nav-link").forEach(n => n.addEventListener("click", () => {
