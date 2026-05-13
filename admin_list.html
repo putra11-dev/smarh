@@ -8,6 +8,26 @@
         body { font-family: 'Poppins', sans-serif; background: #f4f7f6; padding: 20px; }
         .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logout-btn { 
+        background: #dc3545; 
+        color: white; 
+        padding: 10px 15px; 
+        text-decoration: none; 
+        border-radius: 5px; 
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .logout-btn:hover {
+        background: #c82333;
+    }
+
+    .nav-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
         th { background: #4A90E2; color: white; }
@@ -22,9 +42,14 @@
 <div class="container">
     <div class="header">
         <h2>Manajemen Berita</h2>
-        <a href="admin.html" class="btn-add"><i class="fas fa-plus"></i> Tambah Berita</a>
+        <div class="nav-actions">
+            <a href="admin.html" class="btn-add"><i class="fas fa-plus"></i> Tambah Berita</a>
+            <button onclick="handleLogout()" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
     </div>
-
+    
     <table>
         <thead>
             <tr>
@@ -69,6 +94,21 @@
 
     function editBerita(id) {
         window.location.href = `admin.html?id=${id}`;
+    }
+
+async function handleLogout() {
+        const konfirmasi = confirm("Apakah Anda yakin ingin keluar?");
+        if (konfirmasi) {
+            // Logout dari sesi Supabase
+            const { error } = await supabaseClient.auth.signOut();
+            
+            if (error) {
+                alert("Gagal Logout: " + error.message);
+            } else {
+                // Redirect ke index.html
+                window.location.href = 'index.html';
+            }
+        }
     }
 
     async function hapusBerita(id) {
