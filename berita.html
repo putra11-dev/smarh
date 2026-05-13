@@ -111,49 +111,7 @@
             </div>
         </div>
     </footer>
-    <script>
-    function filterBerita() {
-    // 1. Ambil kata kunci pencarian dan ubah ke huruf kecil
-    const input = document.getElementById('searchInput');
-    const filter = input.value.toLowerCase();
-    
-    // 2. Ambil semua kartu berita
-    const container = document.getElementById('container-berita');
-    const cards = container.getElementsByClassName('event-card');
-
-    // 3. Loop semua kartu berita
-    for (let i = 0; i < cards.length; i++) {
-        // Ambil elemen judul di dalam kartu (biasanya tag <h3>)
-        const title = cards[i].querySelector('h3');
-        const textValue = title.textContent || title.innerText;
-
-        // 4. Jika judul cocok dengan kata kunci, tampilkan. Jika tidak, sembunyikan.
-        if (textValue.toLowerCase().indexOf(filter) > -1) {
-            cards[i].style.display = ""; // Tampilkan
-        } else {
-            cards[i].style.display = "none"; // Sembunyikan
-        }
-    }
-
-    // 5. Bonus: Tampilkan pesan jika tidak ada berita yang cocok
-    const noResult = document.getElementById('no-result-msg');
-    const visibleCards = Array.from(cards).filter(c => c.style.display !== "none");
-
-    if (visibleCards.length === 0) {
-        if (!noResult) {
-            const msg = document.createElement('p');
-            msg.id = 'no-result-msg';
-            msg.style.textAlign = 'center';
-            msg.style.gridColumn = '1/-1';
-            msg.innerText = 'Berita yang Anda cari tidak ditemukan.';
-            container.appendChild(msg);
-        }
-    } else if (noResult) {
-        noResult.remove();
-    }
-}
-    </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="java.js"></script>
 </body>
 </html>
