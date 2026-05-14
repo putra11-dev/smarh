@@ -15,10 +15,32 @@
         .btn-save:disabled { background: #ccc; }
         .logout-btn { float: right; background: #ff4d4d; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 14px; }
         #preview-img { max-width: 200px; margin-top: 10px; display: none; border-radius: 8px; }
+        /* Gaya untuk tombol kembali */
+.back-btn {
+    float: left;
+    background: #6c757d;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.back-btn:hover {
+    background: #5a6268;
+}
+
+/* Membersihkan float agar judul tidak naik ke samping tombol */
+h2 {
+    clear: both;
+    padding-top: 15px;
+}
     </style>
 </head>
 <body>
     <div class="admin-container">
+        <a href="admin_list.html" class="back-btn">← Daftar Berita</a>
         <a href="index.html" class="logout-btn">Logout</a>
         <h2 id="form-title">Tambah Berita Baru</h2>
         <hr><br>
